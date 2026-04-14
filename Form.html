@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Issue Form Generator</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+        background: #f0f2f5;
+        color: #000;
+        transition: 0.3s;
+    }
+
+    .dark {
+        background: #1e1e1e;
+        color: #fff;
+    }
+
+    .container {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        max-width: 650px;
+        margin: auto;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        transition: 0.3s;
+    }
+
+    .dark .container {
+        background: #2b2b2b;
+    }
+
+    .top-bar {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 10px;
+    }
+
+    .toggle {
+        cursor: pointer;
+        font-size: 14px;
+        text-decoration: underline;
+    }
+
+    .note {
+        font-size: 12px;
+        color: #555;
+        margin-bottom: 15px;
+    }
+
+    .dark .note {
+        color: #aaa;
+    }
+
+    .question {
+        margin-bottom: 15px;
+    }
+
+    textarea {
+        width: 100%;
+        height: 80px;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 6px;
+    }
+
+    button {
+        padding: 10px 15px;
+        margin-top: 10px;
+        margin-right: 5px;
+        cursor: pointer;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        background: #fafafa;
+    }
+
+    button:hover {
+        background: #eee;
+    }
+
+    #output {
+        white-space: pre-line;
+        background: #f4f4f4;
+        padding: 12px;
+        margin-top: 20px;
+        border-radius: 6px;
+    }
+
+    .dark #output {
+        background: #444;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="top-bar">
+    <span class="toggle" onclick="toggleTheme()">Dark Mode</span>
+</div>
+
+<div class="container">
+
+<div class="note">
+Always reference 3000.264 TJM Customer Care Quality Returns BAS, RS, and CONS and 7000.010 Global Complaint Handling Process if you have any questions regarding the Quality Process.
+</div>
+
+<h2>Issue Form</h2>
+
+<div class="question">
+1) Provided Pictures or Video?<br>
+<label><input type="radio" name="q1" value="yes" checked> Yes</label>
+<label><input type="radio" name="q1" value="no"> No</label>
+</div>
+
+<div class="question">
+2) Is this an out-of-box failure?<br>
+<label><input type="radio" name="q2" value="yes"> Yes</label>
+<label><input type="radio" name="q2" value="no" checked> No</label>
+</div>
+
+<div class="question">
+3) Provided Lot or Serial Number?<br>
+<label><input type="radio" name="q3" value="yes"> Yes</label>
+<label><input type="radio" name="q3" value="no" checked> No</label>
+</div>
+
+<div class="question">
+4) Injury or Safety Risk Reported?<br>
+<label><input type="radio" name="q4" value="yes"> Yes</label>
+<label><input type="radio" name="q4" value="no" checked> No</label>
+</div>
+
+<div class="question">
+5) Add Tracking # if Return Label Number Provided, leave blank if no label was provided<br>
+<input type="text" id="q5">
+</div>
+
+<div class="question">
+6) Was troubleshooting performed?<br>
+<label><input type="radio" name="q6" value="yes"> Yes</label>
+<label><input type="radio" name="q6" value="no" checked> No</label>
+</div>
+
+<div class="question">
+7) Full Description of Issue<br>
+<textarea id="q7"></textarea>
+</div>
+
+<div class="note">
+Always reference the REC-000569 TJM, Quality Returns Exception List in Agile.
+</div>
+
+<button onclick="generateText()">Generate Text (Enter)</button>
+<button onclick="copyText()">Copy</button>
+<button onclick="clearForm()">Clear</button>
+
+<div id="output"></div>
+
+</div>
+
+<script>
+function getValue(name) {
+    return document.querySelector('input[name="' + name + '"]:checked').value;
+}
+
+function generateText() {
+    let output = [];
+
+    // Q1
+    if (getValue("q1") === "yes") {
+        output.push("Pictures or video are attached.");
+    } else {
+        output.push("Unable to provide picture or video evidence of the issue.");
+    }
+
+    // Q2
+    if (getValue("q2") === "yes") {
+        output.push("Out-of-box failure.");
+    } else {
+        output.push("Not an out-of-box failure.");
+    }
+
+    // Q3
+    if (getValue("q3") === "yes") {
+        output.push("Lot or serial number provided.");
+    } else {
+        output.push("Unable to provide serial or lot number.");
+    }
+
+    // Q4
+    if (getValue("q4") === "no") {
+        output.push("No injury or safety risk reported.");
+    }
+
+    // Q5
+    let label = document.getElementById("q5").value.trim();
+    if (label === "") {
+        output.push("No return label provided.");
+    } else {
+        output.push("Tracking: " + label);
+    }
+
+    // Q6 (UPDATED FORMAT)
+    if (getValue("q6") === "yes") {
+        output.push("Troubleshooting: Yes");
+    } else {
+        output.push("Troubleshooting: No");
+    }
+
+    // spacing
+    output.push("");
+
+    // Q7
+    let desc = document.getElementById("q7").value.trim();
+    if (desc !== "") {
+        output.push("Description of the issue: " + desc);
+    } else {
+        output.push("Description of the issue:");
+    }
+
+    document.getElementById("output").innerText = output.join("\n");
+}
+
+// COPY
+function copyText() {
+    navigator.clipboard.writeText(document.getElementById("output").innerText);
+}
+
+// CLEAR
+function clearForm() {
+    document.querySelectorAll("input[type='radio']").forEach(r => r.checked = false);
+
+    document.querySelector("input[name='q1'][value='yes']").checked = true;
+    document.querySelector("input[name='q2'][value='no']").checked = true;
+    document.querySelector("input[name='q3'][value='no']").checked = true;
+    document.querySelector("input[name='q4'][value='no']").checked = true;
+    document.querySelector("input[name='q6'][value='no']").checked = true;
+
+    document.getElementById("q5").value = "";
+    document.getElementById("q7").value = "";
+    document.getElementById("output").innerText = "";
+}
+
+// DARK MODE
+function toggleTheme() {
+    document.body.classList.toggle("dark");
+}
+
+// ENTER = GENERATE (except textarea)
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Enter" && document.activeElement.tagName !== "TEXTAREA") {
+        event.preventDefault();
+        generateText();
+    }
+});
+</script>
+
+</body>
+</html>
