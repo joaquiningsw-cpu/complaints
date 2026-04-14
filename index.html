@@ -130,8 +130,8 @@ Always reference 3000.264 TJM Customer Care Quality Returns BAS, RS, and CONS an
 
 <div class="question">
 4) Injury or Safety Risk Reported?<br>
-<label><input type="radio" name="q4" value="yes"> Yes</label>
-<label><input type="radio" name="q4" value="no" checked> No</label>
+<label><input type="radio" name="q4" value="yes" onchange="updateQ7Label()"> Yes</label>
+<label><input type="radio" name="q4" value="no" checked onchange="updateQ7Label()"> No</label>
 </div>
 
 <div class="question">
@@ -146,7 +146,9 @@ Always reference 3000.264 TJM Customer Care Quality Returns BAS, RS, and CONS an
 </div>
 
 <div class="question">
-7) Full Description of Issue<br>
+7) <span id="q7label">
+Full Description of the event or reported issue, if possible include the what, where, and who.
+</span><br>
 <textarea id="q7"></textarea>
 </div>
 
@@ -167,36 +169,43 @@ function getValue(name) {
     return document.querySelector('input[name="' + name + '"]:checked').value;
 }
 
+// Dynamic Q7 label
+function updateQ7Label() {
+    const q4 = getValue("q4");
+    const label = document.getElementById("q7label");
+
+    if (q4 === "yes") {
+        label.innerHTML = "<b>Please indicate whether medical attention was required for any injuries sustained while using the product. The description must include as much detail as possible, including what the customer was doing at the time of the incident, as well as the what, where, and who.</b>";
+    } else {
+        label.innerHTML = "Full Description of the event or reported issue, if possible include the what, where, and who.";
+    }
+}
+
 function generateText() {
     let output = [];
 
-    // Q1
     if (getValue("q1") === "yes") {
         output.push("Pictures or video are attached.");
     } else {
         output.push("Unable to provide picture or video evidence of the issue.");
     }
 
-    // Q2
     if (getValue("q2") === "yes") {
         output.push("Out-of-box failure.");
     } else {
         output.push("Not an out-of-box failure.");
     }
 
-    // Q3
     if (getValue("q3") === "yes") {
         output.push("Lot or serial number provided.");
     } else {
         output.push("Unable to provide serial or lot number.");
     }
 
-    // Q4
     if (getValue("q4") === "no") {
         output.push("No injury or safety risk reported.");
     }
 
-    // Q5
     let label = document.getElementById("q5").value.trim();
     if (label === "") {
         output.push("No return label provided.");
@@ -204,33 +213,26 @@ function generateText() {
         output.push("Tracking: " + label);
     }
 
-    // Q6 (UPDATED FORMAT)
     if (getValue("q6") === "yes") {
         output.push("Troubleshooting: Yes");
     } else {
         output.push("Troubleshooting: No");
     }
 
-    // spacing
     output.push("");
 
-    // Q7
     let desc = document.getElementById("q7").value.trim();
-    if (desc !== "") {
-        output.push("Description of the issue: " + desc);
-    } else {
-        output.push("Description of the issue:");
-    }
+    output.push("Description of the issue: " + desc);
 
     document.getElementById("output").innerText = output.join("\n");
 }
 
-// COPY
+// Copy
 function copyText() {
     navigator.clipboard.writeText(document.getElementById("output").innerText);
 }
 
-// CLEAR
+// Clear
 function clearForm() {
     document.querySelectorAll("input[type='radio']").forEach(r => r.checked = false);
 
@@ -243,20 +245,25 @@ function clearForm() {
     document.getElementById("q5").value = "";
     document.getElementById("q7").value = "";
     document.getElementById("output").innerText = "";
+
+    updateQ7Label();
 }
 
-// DARK MODE
+// Dark mode
 function toggleTheme() {
     document.body.classList.toggle("dark");
 }
 
-// ENTER = GENERATE (except textarea)
+// Enter = Generate (except textarea)
 document.addEventListener("keydown", function(event) {
     if (event.key === "Enter" && document.activeElement.tagName !== "TEXTAREA") {
         event.preventDefault();
         generateText();
     }
 });
+
+// Init
+updateQ7Label();
 </script>
 
 </body>
