@@ -25,7 +25,6 @@
         max-width: 650px;
         margin: auto;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        transition: 0.3s;
     }
 
     .dark .container {
@@ -78,10 +77,6 @@
         background: #fafafa;
     }
 
-    button:hover {
-        background: #eee;
-    }
-
     #output {
         white-space: pre-line;
         background: #f4f4f4;
@@ -110,46 +105,60 @@ Always reference 3000.264 TJM Customer Care Quality Returns BAS, RS, and CONS an
 
 <h2>Issue Form</h2>
 
+<!-- Q1 -->
 <div class="question">
 1) Provided Pictures or Video?<br>
 <label><input type="radio" name="q1" value="yes" checked> Yes</label>
 <label><input type="radio" name="q1" value="no"> No</label>
 </div>
 
+<!-- Q2 -->
 <div class="question">
 2) Is this an out-of-box failure?<br>
 <label><input type="radio" name="q2" value="yes"> Yes</label>
 <label><input type="radio" name="q2" value="no" checked> No</label>
 </div>
 
+<!-- Q3 -->
 <div class="question">
 3) Provided Lot or Serial Number?<br>
 <label><input type="radio" name="q3" value="yes"> Yes</label>
 <label><input type="radio" name="q3" value="no" checked> No</label>
 </div>
 
+<!-- Q4 -->
 <div class="question">
 4) Injury or Safety Risk Reported?<br>
-<label><input type="radio" name="q4" value="yes" onchange="updateQ7Label()"> Yes</label>
-<label><input type="radio" name="q4" value="no" checked onchange="updateQ7Label()"> No</label>
+<label><input type="radio" name="q4" value="yes" onchange="updateQ8Label()"> Yes</label>
+<label><input type="radio" name="q4" value="no" checked onchange="updateQ8Label()"> No</label>
 </div>
 
+<!-- Q5 -->
 <div class="question">
 5) Add Tracking # if Return Label Number Provided, leave blank if no label was provided<br>
 <input type="text" id="q5">
 </div>
 
+<!-- Q6 -->
 <div class="question">
 6) Was troubleshooting performed?<br>
 <label><input type="radio" name="q6" value="yes"> Yes</label>
 <label><input type="radio" name="q6" value="no" checked> No</label>
 </div>
 
+<!-- Q7 NEW -->
 <div class="question">
-7) <span id="q7label">
+7) Is this complaint related to an Armor or FullForce OTS brace where there was an impact?<br>
+<label><input type="radio" name="q7" value="yes" onchange="updateQ8Label()"> Yes</label>
+<label><input type="radio" name="q7" value="no" checked onchange="updateQ8Label()"> No</label>
+</div>
+
+<!-- Q8 -->
+<div class="question">
+8) <span id="q8label">
 Full Description of the event or reported issue, if possible include the what, where, and who.
 </span><br>
-<textarea id="q7"></textarea>
+<textarea id="q8"></textarea>
 </div>
 
 <div class="note">
@@ -169,13 +178,16 @@ function getValue(name) {
     return document.querySelector('input[name="' + name + '"]:checked').value;
 }
 
-// Dynamic Q7 label
-function updateQ7Label() {
+// Update Q8 label dynamically
+function updateQ8Label() {
     const q4 = getValue("q4");
-    const label = document.getElementById("q7label");
+    const q7 = getValue("q7");
+    const label = document.getElementById("q8label");
 
     if (q4 === "yes") {
-        label.innerHTML = "<b>Please indicate whether medical attention was required for any injuries sustained while using the product. The description must include as much detail as possible, including what the customer was doing at the time of the incident, as well as the what, where, and who.</b>";
+        label.innerHTML = "<b>Please indicate whether medical attention was required for any injuries sustained while using the product. Include what the customer was doing, and full details (what, where, who).</b>";
+    } else if (q7 === "yes") {
+        label.innerHTML = "Full Description of the event or reported issue, if possible include the what, where, and who and details of the impact on the brace.";
     } else {
         label.innerHTML = "Full Description of the event or reported issue, if possible include the what, where, and who.";
     }
@@ -219,9 +231,14 @@ function generateText() {
         output.push("Troubleshooting: No");
     }
 
+    // NEW Impact output
+    if (getValue("q7") === "yes") {
+        output.push("Impact: Yes");
+    }
+
     output.push("");
 
-    let desc = document.getElementById("q7").value.trim();
+    let desc = document.getElementById("q8").value.trim();
     output.push("Description of the issue: " + desc);
 
     document.getElementById("output").innerText = output.join("\n");
@@ -241,12 +258,13 @@ function clearForm() {
     document.querySelector("input[name='q3'][value='no']").checked = true;
     document.querySelector("input[name='q4'][value='no']").checked = true;
     document.querySelector("input[name='q6'][value='no']").checked = true;
+    document.querySelector("input[name='q7'][value='no']").checked = true;
 
     document.getElementById("q5").value = "";
-    document.getElementById("q7").value = "";
+    document.getElementById("q8").value = "";
     document.getElementById("output").innerText = "";
 
-    updateQ7Label();
+    updateQ8Label();
 }
 
 // Dark mode
@@ -254,7 +272,7 @@ function toggleTheme() {
     document.body.classList.toggle("dark");
 }
 
-// Enter = Generate (except textarea)
+// Enter = Generate
 document.addEventListener("keydown", function(event) {
     if (event.key === "Enter" && document.activeElement.tagName !== "TEXTAREA") {
         event.preventDefault();
@@ -263,7 +281,7 @@ document.addEventListener("keydown", function(event) {
 });
 
 // Init
-updateQ7Label();
+updateQ8Label();
 </script>
 
 </body>
